@@ -2,7 +2,7 @@
 
 A Chrome extension that simply extracts colors.
 
-Hold the left mouse button for **0.2 seconds** on any webpage to sample the colour at the cursor position.  
+Hold the left mouse button for **0.2 seconds** on any webpage to sample the color at the cursor position.  
 The hex code (e.g. `FFC700`) is copied to the clipboard automatically, and a brief eyedropper animation confirms the capture.
 
 ## Installation
@@ -14,7 +14,7 @@ The hex code (e.g. `FFC700`) is copied to the clipboard automatically, and a bri
 ## Usage
 
 - **Long-press** the left mouse button anywhere on a page for ≥ 0.2 s.
-- The colour at that exact pixel is sampled, the hex code is copied to your clipboard, and an animation is shown.
+- The color at that exact pixel is sampled, the hex code is copied to your clipboard, and an animation is shown.
 - Release or move the mouse before 0.2 s to cancel without extracting.
 
 ## Permissions
