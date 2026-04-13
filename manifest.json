@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Pipet",
   "version": "1.0.0",
-  "description": "Hold left mouse button for 0.2s to extract the color at the cursor position and copy it to the clipboard.",
+  "description": "Hold the primary mouse button or the C key for 0.2s to extract the color at the pointer position and copy it to the clipboard.",
   "permissions": [
     "clipboardWrite",
     "tabs"
@@ -15,9 +15,15 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "css": ["content.css"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
       "run_at": "document_idle"
     }
   ],

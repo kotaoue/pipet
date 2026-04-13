@@ -2,9 +2,12 @@
   'use strict';
 
   const LONG_PRESS_MS = 200;
+  const KEYBOARD_CURSOR_CLASS = 'pipet-key-hold-active';
 
   let longPressTimer = null;
   let capturePos = null;
+  let lastPointerPos = null;
+  let activeTrigger = null;
 
   // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -19,11 +22,28 @@
     await navigator.clipboard.writeText(text);
   }
 
+  function setKeyboardCursorActive(isActive) {
+    document.documentElement.classList.toggle(KEYBOARD_CURSOR_CLASS, isActive);
+  }
+
+  function isEditableTarget(target) {
+    if (!target) return false;
+
+    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+      return true;
+    }
+
+    return target.isContentEditable === true;
+  }
+
   // ─── Color extraction ────────────────────────────────────────────────────────
 
   function extractColorAtPos(pos) {
     chrome.runtime.sendMessage({ type: 'capture' }, (response) => {
-      if (!response || response.error || !response.dataUrl) return;
+      if (!response || response.error || !response.dataUrl) {
+        setKeyboardCursorActive(false);
+        return;
+      }
 
       const img = new Image();
       img.onload = () => {
@@ -41,7 +61,12 @@
 
         const hex = rgbToHex(r, g, b);
         showAnimation(pos, hex);
-        copyToClipboard(hex);
+        copyToClipboard(hex).finally(() => {
+          setKeyboardCursorActive(false);
+        });
+      };
+      img.onerror = () => {
+        setKeyboardCursorActive(false);
       };
       img.src = response.dataUrl;
     });
@@ -95,32 +120,70 @@
 
   // ─── Event listeners ─────────────────────────────────────────────────────────
 
-  function cancelLongPress() {
+  function startLongPress(pos, trigger) {
+    cancelLongPress(trigger);
+
+    capturePos = pos;
+    activeTrigger = trigger;
+    if (trigger === 'keyboard') {
+      setKeyboardCursorActive(true);
+    }
+    longPressTimer = setTimeout(() => {
+      const nextPos = capturePos;
+      longPressTimer = null;
+      capturePos = null;
+      activeTrigger = null;
+
+      if (nextPos) {
+        extractColorAtPos(nextPos);
+      }
+    }, LONG_PRESS_MS);
+  }
+
+  function cancelLongPress(trigger = null) {
+    if (trigger !== null && activeTrigger !== trigger) {
+      return;
+    }
+
     if (longPressTimer !== null) {
       clearTimeout(longPressTimer);
       longPressTimer = null;
-      capturePos = null;
     }
+
+    capturePos = null;
+    if (activeTrigger === 'keyboard' || trigger === 'keyboard' || trigger === null) {
+      setKeyboardCursorActive(false);
+    }
+    activeTrigger = null;
   }
+
+  document.addEventListener('mousemove', (e) => {
+    lastPointerPos = { x: e.clientX, y: e.clientY };
+  }, true);
 
   document.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return;
 
-    capturePos = { x: e.clientX, y: e.clientY };
-
-    longPressTimer = setTimeout(() => {
-      longPressTimer = null;
-      if (capturePos) {
-        extractColorAtPos(capturePos);
-        capturePos = null;
-      }
-    }, LONG_PRESS_MS);
+    const pos = { x: e.clientX, y: e.clientY };
+    lastPointerPos = pos;
+    startLongPress(pos, 'pointer');
   }, true);
 
-  document.addEventListener('mouseup', cancelLongPress, true);
+  document.addEventListener('mouseup', () => cancelLongPress('pointer'), true);
+  document.addEventListener('keydown', (e) => {
+    if (e.code !== 'KeyC' || e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (isEditableTarget(e.target)) return;
+    if (!lastPointerPos) return;
+
+    startLongPress(lastPointerPos, 'keyboard');
+  }, true);
+  document.addEventListener('keyup', (e) => {
+    if (e.code === 'KeyC') {
+      cancelLongPress('keyboard');
+    }
+  }, true);
   // Cancel if the window loses focus (e.g. mouse released outside the viewport).
-  window.addEventListener('blur', cancelLongPress);
-  document.addEventListener('dragstart', cancelLongPress, true);
-  document.addEventListener('scroll', cancelLongPress, true);
-  document.addEventListener('keydown', cancelLongPress, true);
+  window.addEventListener('blur', () => cancelLongPress());
+  document.addEventListener('dragstart', () => cancelLongPress('pointer'), true);
+  document.addEventListener('scroll', () => cancelLongPress('pointer'), true);
 })();

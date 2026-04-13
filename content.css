@@ -2,6 +2,11 @@
    Pipet – overlay animations
    ========================================================= */
 
+html.pipet-key-hold-active,
+html.pipet-key-hold-active * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Ctext x='4' y='28' font-size='26'%3E%F0%9F%A7%AA%3C/text%3E%3C/svg%3E") 8 28, copy !important;
+}
+
 /*
  * Zero-size anchor element positioned at the cursor.
  * All children are absolutely positioned relative to this anchor.
