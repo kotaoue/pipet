@@ -20,7 +20,7 @@ The hex code (e.g. `FFC700`) is copied to the clipboard automatically, and a bri
 ## Permissions
 
 | Permission | Reason |
-|---|---|
+| --- | --- |
 | `tabs` | Required to capture a screenshot of the active tab for pixel sampling |
 | `clipboardWrite` | Allows writing the hex code to the clipboard from an async context |
 | `<all_urls>` | Content script must run on every page; also needed for `captureVisibleTab` |
