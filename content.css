@@ -104,22 +104,48 @@ html.pipet-key-hold-active * {
 /* ── Keyframes ────────────────────────────────────────── */
 
 @keyframes pipet-ripple {
-  0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 0.7; }
-  100% { transform: translate(-50%, -50%) scale(2.6); opacity: 0;   }
+  0% {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(2.6);
+    opacity: 0;
+  }
 }
 
 @keyframes pipet-pop {
-  0%   { transform: scale(0); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes pipet-slide-in {
-  0%   { opacity: 0; transform: translateY(4px); }
-  100% { opacity: 1; transform: translateY(0);   }
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Popup floats upward and fades out */
 @keyframes pipet-popup-fade-out {
-  0%   { opacity: 1; transform: translateX(-50%) translateY(0);    }
-  100% { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-12px);
+  }
 }
